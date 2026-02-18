@@ -2,3 +2,4 @@
 .gitattributes
 gerentes.xlsx
 vendas.csv
+__pycache__
