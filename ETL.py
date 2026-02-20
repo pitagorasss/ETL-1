@@ -9,4 +9,4 @@ def etl():
      return df_vendas, df_gerentes
      
 if __name__ == '__main__':
-	df_vendas, df_gerentes = etl(low_memory=low_memory)
+	df_vendas, df_gerentes = etl()
