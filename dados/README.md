@@ -84,15 +84,13 @@ Foi desenvolvido um pipeline ETL em Python utilizando a biblioteca **Pandas** pa
 ---
 
 ## 📁 Estrutura do Projeto
-ETL-1/
-
-
+                📁 ETL-1/
                 ├── 📄 ETL.py # Orquestrador principal do pipeline
                 ├── 📄 comp.py # Funções de extração e transformação
                 ├── 📄 database.py # Funções de conexão e carga no SQLite
-                ├── 📄 vendas.db # Banco de dados gerado (após execução)
+                ├── 📄 vendas.db # Banco de dados gerado (após executar)
                 │
                 └── 📁 dados/ # Pasta para os arquivos de entrada
-                ├── 📄 vendas.csv # Dados brutos de vendas (obrigatório)
-                └── 📄 gerentes.xlsx # Dados brutos de gerentes (obrigatório)
-                └── 📄 README.md # Documentação
+                ├── 📄 vendas.csv # Dados brutos de vendas 
+                └── 📄 gerentes.xlsx # Dados brutos de gerentes 
+                └── 📄 README.md # 
