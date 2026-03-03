@@ -62,6 +62,7 @@ Foi desenvolvido um pipeline ETL em Python utilizando a biblioteca **Pandas** pa
 ✅ **Base única e consistente** – sem duplicatas e com datas padronizadas  
 
 ✅ **Dados prontos para consumo** – compatível com SQLite, PostgreSQL, MySQL e qualquer outro outro banco relacional
+
 ✅ **Qualidade garantida** – 100% dos registros tratados e validados  
 
 ✅ **Análises confiáveis** – Informações precisas de performance de vendas por gerente, região e produto  
