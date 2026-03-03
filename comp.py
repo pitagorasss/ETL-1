@@ -13,15 +13,6 @@ def transformacao(df_vendas, df_gerentes, low_memory=False):
     df_vendas = df_vendas.drop(columns=['DATA_BASE']) # === Excluir coluna DATA_BASE
     df_vendas['LOJA'] = df_vendas['LOJA'].fillna('Online') # === Preencher com "Online" as linhas vazias da coluna 'LOJA'
     df_vendas = df_vendas.dropna() # === Excluir linhas com valores nulos
-    df_vendas['DATA'] = pd.to_datetime(df_vendas['DATA'], format="%Y-%m-%d") # === Formatação de data
+    df_vendas['DATA'] = pd.to_datetime(df_vendas['DATA'], format="%Y-%m-%d").dt.date # === Formatação de data e remoção da hora, pois não há o horário no banco de dados de extração
     df_vendas = df_vendas.drop_duplicates(subset=['ID'], keep='first') # === Remove linhas duplicadas da coluna "ID" mantendo o primeiro registro ([keep='False'] remove todas as duplicatas e [keep='last'] mantém a última)
-
-    
-
-
-
-    print(df_vendas)
     return df_vendas, df_gerentes
-    
-    
-    
