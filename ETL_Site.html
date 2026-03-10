@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ETL Pipeline · Portfólio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#05080a;
+  --s1:#0a0f12;
+  --s2:#0f1518;
+  --b1:#19242a;
+  --b2:#243038;
+  --g:#00e89a;
+  --g2:rgba(0,232,154,.1);
+  --g3:rgba(0,232,154,.04);
+  --amber:#f0be55;
+  --red:#ff4d6d;
+  --txt:#d8e8e0;
+  --t2:#8fa89e;
+  --t3:#4a6058;
+  --code:#050d09;
+  --r:5px;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13.5px;line-height:1.75;
+  overflow-x:hidden;
+}
+
+/* ── SCROLLBAR ─────────────────────── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--g),var(--amber))}
+
+/* ── CANVAS BG ─────────────────────── */
+#canvas-bg{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;opacity:.6;
+}
+
+/* ── HERO ──────────────────────────── */
+
+/* ── HERO ──────────────────────────── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:5rem 4rem 5rem;position:relative;overflow:hidden;z-index:1;
+}
+
+.hero-label{
+  display:flex;align-items:center;gap:.8rem;
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--g);margin-bottom:2.5rem;
+  opacity:0;animation:riseIn .6s .1s forwards;
+}
+.hero-label-line{width:24px;height:1px;background:currentColor;opacity:.5}
+
+.hero-title{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(3rem,8.5vw,7rem);
+  font-weight:400;line-height:1.04;letter-spacing:-.03em;
+  text-align:center;margin-bottom:1.8rem;
+  opacity:0;animation:riseIn .7s .25s forwards;
+}
+
+.hero-title .line{display:block;overflow:hidden}
+.hero-title .line span{display:inline-block;animation:slideUp .7s cubic-bezier(.16,1,.3,1) both}
+.hero-title .line:nth-child(1) span{animation-delay:.2s}
+.hero-title .line:nth-child(2) span{animation-delay:.35s}
+
+.hero-title em{
+  font-style:italic;color:var(--g);
+  position:relative;display:inline-block;
+}
+
+/* glitch on em */
+.hero-title em::before,
+.hero-title em::after{
+  content:attr(data-text);
+  position:absolute;top:0;left:0;width:100%;
+}
+.hero-title em::before{
+  color:#ff4d6d;clip-path:polygon(0 0,100% 0,100% 40%,0 40%);
+  animation:glitch1 4s 2s infinite;transform:translateX(-2px);
+}
+.hero-title em::after{
+  color:#00cfff;clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);
+  animation:glitch2 4s 2.1s infinite;transform:translateX(2px);
+}
+
+@keyframes glitch1{
+  0%,95%,100%{opacity:0;transform:translateX(-2px)}
+  96%{opacity:.7;transform:translateX(-4px)}
+  97%{opacity:.7;transform:translateX(3px)}
+  98%{opacity:0}
+}
+@keyframes glitch2{
+  0%,95%,100%{opacity:0;transform:translateX(2px)}
+  96%{opacity:.5;transform:translateX(4px)}
+  97%{opacity:.5;transform:translateX(-2px)}
+  98%{opacity:0}
+}
+
+.hero-sub{
+  font-size:.85rem;color:var(--t2);max-width:540px;
+  text-align:center;line-height:1.85;margin-bottom:3rem;
+  opacity:0;animation:riseIn .6s .5s forwards;
+}
+
+.hero-btns{
+  display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:riseIn .6s .65s forwards;
+}
+
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.72rem 1.7rem;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;border-radius:var(--r);
+  transition:all .22s;cursor:none;border:none;font-weight:500;
+  position:relative;overflow:hidden;
+}
+
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.08);
+  transform:translateX(-110%) skewX(-12deg);
+  transition:transform .35s cubic-bezier(.77,0,.18,1);
+}
+.btn:hover::before{transform:translateX(110%) skewX(-12deg)}
+
+.btn-g{background:var(--g);color:#04090c;box-shadow:0 0 24px rgba(0,232,154,.25)}
+.btn-g:hover{background:#00ffb0;box-shadow:0 0 40px rgba(0,232,154,.45);transform:translateY(-2px)}
+
+.btn-o{background:transparent;border:1px solid var(--b2);color:var(--t2)}
+.btn-o:hover{border-color:var(--g);color:var(--g);background:var(--g3)}
+
+/* scroll hint */
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);
+  opacity:0;animation:riseIn .5s 1.2s forwards;
+}
+.scroll-line{
+  width:1px;height:40px;background:linear-gradient(var(--g),transparent);
+  animation:scrollLine 1.8s ease-in-out infinite;
+}
+@keyframes scrollLine{0%,100%{opacity:.3;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+
+/* ── METRICS ───────────────────────── */
+.metrics{
+  position:relative;z-index:1;
+  display:flex;justify-content:center;flex-wrap:wrap;
+  border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);
+}
+
+.met{
+  padding:2rem 3.5rem;border-right:1px solid var(--b1);
+  text-align:center;flex:1 1 auto;
+  position:relative;overflow:hidden;
+}
+.met:last-child{border-right:none}
+
+.met::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 100%,rgba(0,232,154,.07),transparent 70%);
+  opacity:0;transition:opacity .3s;
+}
+.met:hover::after{opacity:1}
+
+.met-val{
+  font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800;
+  color:var(--g);display:block;line-height:1;margin-bottom:.4rem;
+}
+.met-lbl{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+
+/* ── SECTION COMMON ────────────────── */
+.wrap{max-width:1180px;margin:0 auto}
+section{padding:7rem 3.5rem;position:relative;z-index:1}
+
+.sh{
+  display:flex;align-items:center;gap:1rem;margin-bottom:4rem;
+}
+.sh-n{font-size:.58rem;color:var(--g);letter-spacing:.24em;font-weight:500}
+h2{
+  font-family:'Syne',sans-serif;font-size:2rem;
+  font-weight:800;letter-spacing:-.03em;
+}
+.sh-r{flex:1;height:1px;background:linear-gradient(90deg,var(--b2),transparent);margin-left:1rem}
+
+/* ── PIPELINE ──────────────────────── */
+.pipe-shell{
+  border:1px solid var(--b1);border-radius:var(--r);
+  overflow:hidden;background:var(--s1);
+  box-shadow:0 0 60px rgba(0,0,0,.4);
+}
+.pipe-bar{
+  padding:.8rem 1.4rem;border-bottom:1px solid var(--b1);
+  background:var(--s2);
+  display:flex;align-items:center;gap:.45rem;
+}
+.pd{width:10px;height:10px;border-radius:50%}
+.pd-r{background:#ff5f57}.pd-y{background:#febc2e}.pd-g{background:#28c840}
+.pb-title{font-size:.66rem;color:var(--t3);letter-spacing:.08em;margin-left:.5rem}
+.pb-sp{flex:1}
+.pb-run{
+  font-size:.58rem;color:var(--g);
+  border:1px solid rgba(0,232,154,.25);
+  padding:.15rem .55rem;border-radius:3px;letter-spacing:.1em;
+  display:flex;align-items:center;gap:.4rem;
+}
+.pb-run::before{
+  content:'';width:5px;height:5px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 5px var(--g);animation:livePulse 2s infinite;
+}
+
+.pipe-stages{display:grid;grid-template-columns:repeat(3,1fr)}
+
+.stage{
+  padding:2.8rem 2.2rem;border-right:1px solid var(--b1);
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.stage:last-child{border-right:none}
+
+/* animated top border */
+.stage::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--g),rgba(0,232,154,0));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s cubic-bezier(.77,0,.18,1);
+}
+.stage:hover{background:rgba(0,232,154,.02)}
+.stage:hover::before{transform:scaleX(1)}
+
+/* data-flow line between stages */
+.stage-arrow{
+  position:absolute;right:-13px;top:50%;transform:translateY(-50%);
+  width:26px;height:26px;background:var(--bg);
+  border:1px solid var(--b2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:var(--g);z-index:2;
+}
+
+.s-num{
+  font-size:.58rem;letter-spacing:.2em;color:var(--g);
+  margin-bottom:.7rem;text-transform:uppercase;
+}
+.stage h3{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
+  margin-bottom:.8rem;
+}
+.stage-desc{color:var(--t2);font-size:.77rem;line-height:1.7;margin-bottom:1.2rem}
+
+.s-list{list-style:none}
+.s-list li{
+  font-size:.71rem;color:var(--t3);
+  padding:.28rem 0;border-top:1px solid rgba(25,36,42,.8);
+  display:flex;align-items:baseline;gap:.45rem;
+  transition:color .2s;
+}
+.s-list li:hover{color:var(--txt)}
+.s-list li::before{content:'›';color:var(--g);flex-shrink:0;font-size:.9rem}
+
+/* ── FLOWING DATA ANIMATION ────────── */
+.flow-container{
+  margin:3rem 0;
+  position:relative;height:80px;overflow:hidden;
+  border-radius:var(--r);
+  background:var(--s1);border:1px solid var(--b1);
+}
+.flow-track{
+  position:absolute;top:50%;left:0;right:0;
+  height:1px;background:var(--b1);
+  transform:translateY(-50%);
+}
+.flow-label{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--t3);
+}
+.flow-label-l{left:1.5rem}
+.flow-label-r{right:1.5rem;color:var(--g)}
+.flow-particle{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 10px var(--g),0 0 20px rgba(0,232,154,.3);
+  animation:flowMove 2.5s linear infinite;
+}
+.flow-particle:nth-child(2){animation-delay:.8s;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.flow-particle:nth-child(3){animation-delay:1.6s;width:5px;height:5px;opacity:.5}
+@keyframes flowMove{
+  0%{left:-10px;opacity:0}
+  5%{opacity:1}
+  95%{opacity:1}
+  100%{left:calc(100% + 10px);opacity:0}
+}
+
+/* ── PROBLEMS ──────────────────────── */
+.prob-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:1px;background:var(--b1);
+  border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;
+}
+
+.pc{
+  background:var(--s1);padding:2rem 1.8rem;
+  position:relative;overflow:hidden;
+  transition:background .25s;
+}
+.pc:hover{background:var(--s2)}
+
+/* animated corner accent */
+.pc::before{
+  content:'';position:absolute;
+  top:-1px;right:-1px;
+  width:0;height:0;
+  border-top:28px solid var(--b2);
+  border-left:28px solid transparent;
+  transition:border-top-color .25s;
+}
+.pc:hover::before{border-top-color:var(--g)}
+
+.pc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+
+.pc-icon{
+  width:38px;height:38px;
+  background:var(--g2);border:1px solid rgba(0,232,154,.13);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  transition:transform .25s;
+}
+.pc:hover .pc-icon{transform:scale(1.1) rotate(3deg)}
+
+.pc-badge{
+  font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);border:1px solid rgba(240,190,85,.2);
+  padding:.18rem .45rem;border-radius:3px;white-space:nowrap;
+}
+
+.pc h4{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:.45rem}
+.pc p{color:var(--t3);font-size:.74rem;line-height:1.65}
+
+.pc-sol{
+  margin-top:1rem;padding-top:1rem;
+  border-top:1px solid var(--b1);
+  font-size:.7rem;color:var(--g);
+  display:flex;align-items:flex-start;gap:.45rem;
+}
+.pc-sol-dot{
+  width:14px;height:14px;background:var(--g2);
+  border:1px solid rgba(0,232,154,.3);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.5rem;flex-shrink:0;margin-top:1px;
+}
+
+/* ── CODE ──────────────────────────── */
+.code-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));
+  gap:1.5rem;
+}
+
+.cc{
+  background:var(--code);border:1px solid var(--b1);
+  border-radius:var(--r);overflow:hidden;
+  transition:all .25s;
+}
+.cc:hover{border-color:var(--b2);transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+
+.cc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.65rem 1.2rem;border-bottom:1px solid var(--b1);
+  background:var(--s2);
+}
+.cc-file{display:flex;align-items:center;gap:.45rem}
+.cc-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--g);opacity:.5;
+  transition:opacity .2s;box-shadow:0 0 6px var(--g);
+}
+.cc:hover .cc-dot{opacity:1}
+.cc-name{font-size:.72rem;color:var(--t2);letter-spacing:.04em}
+.cc-tag{
+  font-size:.57rem;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--b1);padding:.13rem .42rem;border-radius:3px;
+}
+
+/* copy btn */
+.cc-copy{
+  font-size:.57rem;color:var(--t3);letter-spacing:.1em;
+  background:none;border:1px solid var(--b1);
+  padding:.13rem .5rem;border-radius:3px;cursor:none;
+  transition:all .2s;display:flex;align-items:center;gap:.3rem;
+}
+.cc-copy:hover{border-color:var(--g);color:var(--g)}
+.cc-copy.copied{border-color:var(--g);color:var(--g)}
+
+pre{padding:1.5rem;overflow-x:auto;font-size:.69rem;line-height:1.88;color:#7a9090;counter-reset:ln}
+/* line numbers */
+pre .ln{
+  display:block;position:relative;
+}
+pre .ln::before{
+  content:counter(ln);counter-increment:ln;
+  display:inline-block;width:2em;text-align:right;
+  margin-right:1.2em;color:var(--b2);user-select:none;
+  font-size:.85em;
+}
+
+.kw{color:#c792ea}.fn{color:#82aaff}.st{color:#c3e88d}
+.cm{color:#304d40;font-style:italic}.op{color:#89ddff}
+.num{color:#f78c6c}
+
+/* ── TECH STACK ────────────────────── */
+.tech-g{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:1px;background:var(--b1);
+  border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;
+}
+
+.tc{
+  background:var(--s1);padding:1.8rem 1.4rem;
+  text-align:center;position:relative;overflow:hidden;
+  transition:background .25s;
+}
+.tc:hover{background:var(--s2)}
+
+.tc-glow{
+  position:absolute;width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,232,154,.12),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:0;transition:opacity .35s;pointer-events:none;
+}
+.tc:hover .tc-glow{opacity:1}
+
+.tc-icon{font-size:1.7rem;display:block;margin-bottom:.75rem;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.tc:hover .tc-icon{transform:scale(1.15) translateY(-2px)}
+
+.tc-n{font-family:'Syne',sans-serif;font-size:.83rem;font-weight:700;display:block;margin-bottom:.25rem}
+.tc-v{font-size:.6rem;color:var(--g);letter-spacing:.12em}
+.tc-r{font-size:.58rem;color:var(--t3);letter-spacing:.08em;margin-top:.18rem;display:block}
+
+/* file tree */
+.ft-wrap{margin-top:3.5rem}
+.ft-hd{
+  display:flex;align-items:center;gap:.6rem;
+  margin-bottom:1rem;color:var(--t3);
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+}
+.ft-hd::before{content:'';display:block;width:4px;height:4px;background:var(--g);border-radius:50%}
+
+.file-tree{
+  background:var(--code);border:1px solid var(--b1);border-radius:var(--r);
+  padding:1.8rem 2rem;font-size:.78rem;line-height:2.1;
+  display:inline-block;min-width:420px;
+}
+.fd{color:var(--amber);font-weight:500}
+.fp{color:var(--g)}
+.fdb{color:#c792ea}
+.fdata{color:var(--t3)}
+.fmd{color:#89ddff}
+.ft{color:#1a2c22}
+.fnote{color:#2a4030;margin-left:.5rem;font-style:italic}
+
+/* ── RESULTS ───────────────────────── */
+.res-g{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1.5rem;
+}
+
+.rc{
+  border:1px solid var(--b1);border-radius:var(--r);
+  padding:2rem 1.8rem;background:var(--s1);
+  position:relative;overflow:hidden;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+}
+
+.rc:hover{
+  border-color:rgba(0,232,154,.22);background:var(--s2);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 1px rgba(0,232,154,.07);
+}
+
+.rc::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(var(--g),var(--amber));
+  border-radius:2px 0 0 2px;
+}
+
+.rc-n{
+  font-family:'Syne',sans-serif;font-size:.58rem;
+  color:var(--t3);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:1rem;display:block;
+}
+.rc-icon{font-size:1.3rem;display:block;margin-bottom:.8rem;transition:transform .3s}
+.rc:hover .rc-icon{transform:scale(1.15)}
+.rc strong{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;display:block;margin-bottom:.5rem}
+.rc p{color:var(--t3);font-size:.75rem;line-height:1.65}
+
+/* ── REVEAL ────────────────────────── */
+
+/* ── REVEAL ────────────────────────── */
+.rev{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .6s cubic-bezier(.16,1,.3,1),
+             transform .6s cubic-bezier(.16,1,.3,1);
+}
+.rev.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ── SECTION TINT ──────────────────── */
+.tinted{
+  background:var(--s1);
+  border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);
+}
+
+/* ── PROGRESS BAR ──────────────────── */
+#progress{
+  position:fixed;top:0;left:0;height:2px;z-index:600;
+  background:linear-gradient(90deg,var(--g),var(--amber));
+  width:0%;transition:width .1s linear;
+}
+
+/* ── SECTION TRANSITION LINES ──────── */
+.section-glow{
+  position:absolute;left:0;right:0;
+  height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);
+  opacity:0;transition:opacity .5s;pointer-events:none;
+}
+section:hover .section-glow{opacity:.4}
+
+/* ── ANIMATIONS ────────────────────── */
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ── RESPONSIVE ────────────────────── */
+@media(max-width:960px){
+  section{padding:5rem 1.5rem}
+  .hero{padding:5rem 1.5rem 4rem}
+  .pipe-stages{grid-template-columns:1fr}
+  .stage{border-right:none;border-bottom:1px solid var(--b1)}
+  .stage:last-child{border-bottom:none}
+  .stage-arrow{display:none}
+  .met{padding:1.4rem 1.8rem}
+}
+@media(max-width:600px){
+  .hero-title{font-size:2.6rem}
+  .code-grid{grid-template-columns:1fr}
+  .file-tree{min-width:auto;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<canvas id="canvas-bg"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="section-glow" style="top:0"></div>
+
+  <div class="hero-label">
+    <span class="hero-label-line"></span>
+    · Pitágoras ·
+    <span class="hero-label-line"></span>
+  </div>
+
+  <h1 class="hero-title">
+    <span class="line"><span>Pipeline de</span></span>
+    <span class="line"><span><em>Dados Comerciais</em></span></span>
+  </h1>
+
+  <p class="hero-sub">
+    Um Pipeline ETL completo em Python. Dados íntegros para análises imediatas de desempenho comercial.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#pipeline" class="btn btn-g">Ver Pipeline →</a>
+    <a href="#codigo" class="btn btn-o">{ } Código-Fonte</a>
+  </div>
+
+
+</section>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="met"><span class="met-val" data-t="3">0</span><span class="met-lbl">Módulos Python</span></div>
+  <div class="met"><span class="met-val" data-t="2">0</span><span class="met-lbl">Fontes de Dados</span></div>
+  <div class="met"><span class="met-val" data-t="6">0</span><span class="met-lbl">Transformações</span></div>
+  <div class="met"><span class="met-val" data-t="1">0</span><span class="met-lbl">Banco Relacional</span></div>
+</div>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="sh rev"><span class="sh-n">01 //</span><h2>O Pipeline</h2><div class="sh-r"></div></div>
+
+    <!-- Data flow animation -->
+    <div class="flow-container rev d1">
+      <div class="flow-track"></div>
+      <span class="flow-label flow-label-l">vendas.csv · gerentes.xlsx</span>
+      <div class="flow-particle"></div>
+      <div class="flow-particle"></div>
+      <div class="flow-particle"></div>
+      <span class="flow-label flow-label-r">vendas.db ✓</span>
+    </div>
+
+    <div class="pipe-shell rev d2">
+      <div class="pipe-bar">
+        <div class="pd pd-r"></div><div class="pd pd-y"></div><div class="pd pd-g"></div>
+        <span class="pb-title">ETL.py — Fluxo de Dados</span>
+        <div class="pb-sp"></div>
+        <span class="pb-run">RUNNING</span>
+      </div>
+      <div class="pipe-stages">
+        <div class="stage">
+          <div class="s-num">01 · Extração</div>
+          <p class="stage-desc">Leitura automatizada de múltiplas fontes com Pandas e controle de memória.</p>
+          <ul class="s-list">
+            <li><code>vendas.csv</code> via pd.read_csv()</li>
+            <li><code>gerentes.xlsx</code> via pd.read_excel()</li>
+            <li>low_memory configurável</li>
+            <li>Retorno como DataFrames</li>
+          </ul>
+        </div>
+        <div class="stage">
+          <div class="s-num">02 · Transformação</div>
+          <p class="stage-desc">Limpeza, padronização e tratamento dos dados brutos.</p>
+          <ul class="s-list">
+            <li>Drop coluna <code>DATA_BASE</code></li>
+            <li>fillna('Online') em LOJA</li>
+            <li>dropna() nas demais colunas</li>
+            <li>Datas → ISO 8601</li>
+            <li>Dedup por ID (keep='first')</li>
+            <li>str.strip() + str.title()</li>
+          </ul>
+        </div>
+        <div class="stage">
+          <div class="s-num">03 · Carga</div>
+          <p class="stage-desc">Load em SQLite. Banco relacional nativo do Python</p>
+          <ul class="s-list">
+            <li>Tabelas criadas automaticamente</li>
+            <li>FOREIGN KEY: vendas → gerentes</li>
+            <li>Inserção via df.to_sql()</li>
+            <li>Arquivo <code>vendas.db</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS -->
+<section id="problemas" class="tinted">
+  <div class="wrap">
+    <div class="sh rev"><span class="sh-n">02 //</span><h2>Problemas e Soluções</h2><div class="sh-r"></div></div>
+    <div class="prob-grid">
+      <div class="pc rev">
+        <div class="pc-head"><div class="pc-icon">🕳️</div><span class="pc-badge">Nulos</span></div>
+        <h4>Valores Nulos</h4>
+        <p>Colunas como <code>LOJA</code> com registros vazios comprometendo análises regionais.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>fillna('Online') + dropna() nas demais colunas.</div>
+      </div>
+      <div class="pc rev d1">
+        <div class="pc-head"><div class="pc-icon">📅</div><span class="pc-badge">Datas</span></div>
+        <h4>Datas Inconsistentes</h4>
+        <p>Formatação heterogênea e horários desnecessários dificultando agrupamentos temporais.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>Conversão e padronização para datetime, extração ISO 8601.</div>
+      </div>
+      <div class="pc rev d2">
+        <div class="pc-head"><div class="pc-icon">♊</div><span class="pc-badge">Duplicatas</span></div>
+        <h4>Registros Duplicados</h4>
+        <p>IDs duplicados distorcendo contagens e métricas de receita por produto.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>drop_duplicates(subset=['ID'], keep='first').</div>
+      </div>
+      <div class="pc rev">
+        <div class="pc-head"><div class="pc-icon">🔤</div><span class="pc-badge">Strings</span></div>
+        <h4>Nomes Não Padronizados</h4>
+        <p>Espaços extras e capitalização inconsistente quebrando joins e agrupamentos.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>str.strip() + str.title() em todos os campos.</div>
+      </div>
+      <div class="pc rev d1">
+        <div class="pc-head"><div class="pc-icon">🔗</div><span class="pc-badge">Integridade</span></div>
+        <h4>Sem Integridade Relacional</h4>
+        <p>Vendas e gerentes sem vínculo formal, impossibilitando análises conjuntas.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>FOREIGN KEY (id_gerente) no esquema SQLite.</div>
+      </div>
+      <div class="pc rev d2">
+        <div class="pc-head"><div class="pc-icon">🗂️</div><span class="pc-badge">Formatos</span></div>
+        <h4>Formatos Heterogêneos</h4>
+        <p>CSV e Excel sem processo unificado de ingestão, dificultando manutenção.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>Pipeline único via ETL.py, abstraindo as fontes.</div>
+      </div>
+      <div class="pc rev">
+        <div class="pc-head"><div class="pc-icon">🧮</div><span class="pc-badge">Tipos</span></div>
+        <h4>Tipos de Dados Incorretos</h4>
+        <p>Colunas numéricas importadas como string impedindo operações aritméticas e agregações corretas.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>Conversão explícita de dtypes via Pandas após a extração.</div>
+      </div>
+      <div class="pc rev d1">
+        <div class="pc-head"><div class="pc-icon">🏗️</div><span class="pc-badge">Esquema</span></div>
+        <h4>Ausência de Esquema Formal</h4>
+        <p>Dados sem estrutura relacional definida, sem constraints de tipo ou chaves primárias garantidas.</p>
+        <div class="pc-sol"><span class="pc-sol-dot">✓</span>Esquema declarado com PRIMARY KEY e FOREIGN KEY no SQLite.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section id="stack" class="tinted">
+  <div class="wrap">
+    <div class="sh rev"><span class="sh-n">03 //</span><h2>Stack</h2><div class="sh-r"></div></div>
+    <div class="tech-g rev">
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">🐍</span><span class="tc-n">Python</span><span class="tc-v">3.14+</span><span class="tc-r">Linguagem Base</span></div>
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">🐼</span><span class="tc-n">Pandas</span><span class="tc-v">2.3.3</span><span class="tc-r">Manipulação de Dados</span></div>
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">🗄️</span><span class="tc-n">SQLite3</span><span class="tc-v">nativa</span><span class="tc-r">Banco Relacional</span></div>
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">📊</span><span class="tc-n">OpenPyXL</span><span class="tc-v">3.1.2</span><span class="tc-r">Leitura de Excel</span></div>
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">🔢</span><span class="tc-n">NumPy</span><span class="tc-v">1.26+</span><span class="tc-r">Operações Numéricas</span></div>
+      <div class="tc"><span class="tc-glow"></span><span class="tc-icon">📁</span><span class="tc-n">PathLib</span><span class="tc-v">nativa</span><span class="tc-r">Gerenc. de Caminhos</span></div>
+    </div>
+    <div class="ft-wrap rev d1">
+      <div class="ft-hd">Estrutura do Projeto</div>
+      <div class="file-tree">
+        <span class="fd">📁 ETL-1/</span><br>
+        <span class="ft">├── </span><span class="fp">ETL.py</span><span class="fnote">— orquestrador principal</span><br>
+        <span class="ft">├── </span><span class="fp">comp.py</span><span class="fnote">— extração e transformação</span><br>
+        <span class="ft">├── </span><span class="fp">database.py</span><span class="fnote">— conexão e carga</span><br>
+        <span class="ft">├── </span><span class="fdb">vendas.db</span><span class="fnote">— banco gerado</span><br>
+        <span class="ft">├── </span><span class="fmd">README.md</span><br>
+        <span class="ft">└── </span><span class="fd">📁 dados/</span><br>
+        <span class="ft">    ├── </span><span class="fdata">vendas.csv</span><span class="fnote">— dados brutos</span><br>
+        <span class="ft">    └── </span><span class="fdata">gerentes.xlsx</span><span class="fnote">— dados brutos</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE -->
+<section id="codigo">
+  <div class="wrap">
+    <div class="sh rev"><span class="sh-n">04 //</span><h2>Código-Fonte</h2><div class="sh-r"></div></div>
+    <div class="code-grid">
+
+      <div class="cc rev">
+        <div class="cc-head">
+          <div class="cc-file"><span class="cc-dot"></span><span class="cc-name">ETL.py</span></div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <span class="cc-tag">CÓDIGO EXECUTOR</span>
+            <button class="cc-copy" onclick="copyCode(this)">⎘ copiar</button>
+          </div>
+        </div>
+        <pre id="code1"><span class="ln"><span class="kw">import</span> pandas <span class="kw">as</span> pd</span>
+<span class="ln"><span class="kw">import</span> numpy <span class="kw">as</span> np</span>
+<span class="ln"><span class="kw">from</span> comp <span class="kw">import</span> extracao, transformacao</span>
+<span class="ln"><span class="kw">from</span> database <span class="kw">import</span> criar_tabelas, carga</span>
+<span class="ln"></span>
+<span class="ln"><span class="kw">def</span> <span class="fn">etl</span>():</span>
+<span class="ln">    <span class="cm"># ── 1. Extração ─────────────────</span></span>
+<span class="ln">    df_vendas, df_gerentes <span class="op">=</span> <span class="fn">extracao</span>(</span>
+<span class="ln">        low_memory<span class="op">=</span><span class="kw">False</span></span>
+<span class="ln">    )</span>
+<span class="ln">    <span class="cm"># ── 2. Transformação ────────────</span></span>
+<span class="ln">    df_vendas, df_gerentes <span class="op">=</span> <span class="fn">transformacao</span>(</span>
+<span class="ln">        df_vendas, df_gerentes</span>
+<span class="ln">    )</span>
+<span class="ln">    <span class="cm"># ── 3. Carga ────────────────────</span></span>
+<span class="ln">    <span class="fn">criar_tabelas</span>()</span>
+<span class="ln">    <span class="fn">carga</span>(df_vendas, df_gerentes)</span>
+<span class="ln">    <span class="kw">return</span> df_vendas, df_gerentes</span>
+<span class="ln"></span>
+<span class="ln"><span class="kw">if</span> __name__ <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span class="ln">    df_vendas, df_gerentes <span class="op">=</span> <span class="fn">etl</span>()</span></pre>
+      </div>
+
+      <div class="cc rev d1">
+        <div class="cc-head">
+          <div class="cc-file"><span class="cc-dot"></span><span class="cc-name">comp.py</span></div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <span class="cc-tag">extração · transformação</span>
+            <button class="cc-copy" onclick="copyCode(this)">⎘ copiar</button>
+          </div>
+        </div>
+        <pre id="code2"><span class="ln"><span class="kw">def</span> <span class="fn">transformacao</span>(df_vendas, df_gerentes):</span>
+<span class="ln">    <span class="cm"># Remove coluna desnecessária</span></span>
+<span class="ln">    df_vendas <span class="op">=</span> df_vendas.<span class="fn">drop</span>(</span>
+<span class="ln">        columns<span class="op">=</span>[<span class="st">'DATA_BASE'</span>]</span>
+<span class="ln">    )</span>
+<span class="ln">    <span class="cm"># Trata nulos em LOJA</span></span>
+<span class="ln">    df_vendas[<span class="st">'LOJA'</span>] <span class="op">=</span> (</span>
+<span class="ln">        df_vendas[<span class="st">'LOJA'</span>].<span class="fn">fillna</span>(<span class="st">'Online'</span>)</span>
+<span class="ln">    )</span>
+<span class="ln">    df_vendas <span class="op">=</span> df_vendas.<span class="fn">dropna</span>()</span>
+<span class="ln">    <span class="cm"># Formata datas → ISO 8601</span></span>
+<span class="ln">    df_vendas[<span class="st">'DATA'</span>] <span class="op">=</span> (</span>
+<span class="ln">        pd.<span class="fn">to_datetime</span>(</span>
+<span class="ln">            df_vendas[<span class="st">'DATA'</span>],</span>
+<span class="ln">            format<span class="op">=</span><span class="st">"%Y-%m-%d"</span></span>
+<span class="ln">        ).dt.date</span>
+<span class="ln">    )</span>
+<span class="ln">    df_vendas <span class="op">=</span> df_vendas.<span class="fn">drop_duplicates</span>(</span>
+<span class="ln">        subset<span class="op">=</span>[<span class="st">'ID'</span>], keep<span class="op">=</span><span class="st">'first'</span></span>
+<span class="ln">    )</span>
+<span class="ln">    <span class="kw">return</span> df_vendas, df_gerentes</span></pre>
+      </div>
+
+      <div class="cc rev d2">
+        <div class="cc-head">
+          <div class="cc-file"><span class="cc-dot"></span><span class="cc-name">database.py</span></div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <span class="cc-tag">carga · sqlite</span>
+            <button class="cc-copy" onclick="copyCode(this)">⎘ copiar</button>
+          </div>
+        </div>
+        <pre id="code3"><span class="ln"><span class="kw">def</span> <span class="fn">criar_tabelas</span>():</span>
+<span class="ln">    conn <span class="op">=</span> <span class="fn">criar_conexao</span>()</span>
+<span class="ln">    cursor <span class="op">=</span> conn.<span class="fn">cursor</span>()</span>
+<span class="ln">    cursor.<span class="fn">execute</span>(<span class="st">'''</span></span>
+<span class="ln"><span class="st">        CREATE TABLE IF NOT EXISTS vendas(</span></span>
+<span class="ln"><span class="st">            id_venda   INTEGER PRIMARY KEY,</span></span>
+<span class="ln"><span class="st">            data_venda VARCHAR(10),</span></span>
+<span class="ln"><span class="st">            produto    VARCHAR(20),</span></span>
+<span class="ln"><span class="st">            quantidade INTEGER,</span></span>
+<span class="ln"><span class="st">            preco_unitario REAL,</span></span>
+<span class="ln"><span class="st">            valor_total    REAL,</span></span>
+<span class="ln"><span class="st">            id_gerente INTEGER,</span></span>
+<span class="ln"><span class="st">            FOREIGN KEY (id_gerente)</span></span>
+<span class="ln"><span class="st">                REFERENCES gerentes(id_gerente)</span></span>
+<span class="ln"><span class="st">        )</span></span>
+<span class="ln"><span class="st">    '''</span>)</span>
+<span class="ln">    conn.<span class="fn">commit</span>(); conn.<span class="fn">close</span>()</span>
+<span class="ln"></span>
+<span class="ln"><span class="kw">def</span> <span class="fn">carga</span>(df_vendas, df_gerentes):</span>
+<span class="ln">    conn <span class="op">=</span> <span class="fn">criar_conexao</span>()</span>
+<span class="ln">    df_gerentes.<span class="fn">to_sql</span>(<span class="st">'gerentes'</span>, conn,</span>
+<span class="ln">        if_exists<span class="op">=</span><span class="st">'replace'</span>, index<span class="op">=</span><span class="kw">False</span>)</span>
+<span class="ln">    df_vendas.<span class="fn">to_sql</span>(<span class="st">'vendas'</span>, conn,</span>
+<span class="ln">        if_exists<span class="op">=</span><span class="st">'replace'</span>, index<span class="op">=</span><span class="kw">False</span>)</span>
+<span class="ln">    conn.<span class="fn">close</span>()</span></pre>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<script>
+// ── SCROLL PROGRESS ────────────────────────────
+const prog = document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const p=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  prog.style.width=p+'%';
+});
+
+// ── CANVAS PARTICLE FIELD ──────────────────────
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener('resize',resize);
+
+const PARTICLES=80;
+const particles=[];
+
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.vx=(Math.random()-.5)*.3;
+    this.vy=(Math.random()-.5)*.3;
+    this.r=Math.random()*1.5+.3;
+    this.alpha=Math.random()*.4+.05;
+    this.color=Math.random()>.7?'rgba(240,190,85,':'rgba(0,232,154,';
+  }
+  update(){
+    this.x+=this.vx; this.y+=this.vy;
+    if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height) this.reset();
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=this.color+this.alpha+')';
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<PARTICLES;i++) particles.push(new Particle());
+
+// connections
+function drawConnections(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(0,232,154,${.06*(1-d/120)})`;
+        ctx.lineWidth=.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+// mouse interaction
+let pmx=0,pmy=0;
+document.addEventListener('mousemove',e=>{pmx=e.clientX;pmy=e.clientY});
+
+function animCanvas(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // mouse repel
+  particles.forEach(p=>{
+    const dx=p.x-pmx,dy=p.y-pmy;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<100){
+      p.vx+=(dx/d)*.04;
+      p.vy+=(dy/d)*.04;
+      // cap speed
+      const spd=Math.sqrt(p.vx*p.vx+p.vy*p.vy);
+      if(spd>1.5){p.vx=(p.vx/spd)*1.5;p.vy=(p.vy/spd)*1.5}
+    }
+    p.update(); p.draw();
+  });
+  drawConnections();
+  requestAnimationFrame(animCanvas);
+}
+animCanvas();
+
+// ── INTERSECTION OBSERVER (reveal) ────────────
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}
+  });
+},{threshold:.07});
+document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+
+// ── ANIMATED COUNTERS ──────────────────────────
+const metObs=new IntersectionObserver(([e])=>{
+  if(!e.isIntersecting) return;
+  document.querySelectorAll('.met-val[data-t]').forEach(el=>{
+    const target=+el.dataset.t;
+    let cur2=0;
+    const steps=28,dur=900;
+    const tick=()=>{
+      cur2=Math.min(cur2+target/steps,target);
+      el.textContent=Math.round(cur2);
+      if(cur2<target) setTimeout(tick,dur/steps);
+    };
+    setTimeout(tick,500);
+  });
+  metObs.disconnect();
+},{threshold:.4});
+const mb=document.querySelector('.metrics');
+if(mb) metObs.observe(mb);
+
+// ── COPY CODE ──────────────────────────────────
+function copyCode(btn){
+  const pre=btn.closest('.cc').querySelector('pre');
+  const text=pre.innerText.replace(/^\d+\t/gm,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✓ copiado';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='⎘ copiar';btn.classList.remove('copied')},2000);
+  });
+}
+
+// ── PARALLAX HERO ──────────────────────────────
+const heroTitle=document.querySelector('.hero-title');
+const heroSub=document.querySelector('.hero-sub');
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  if(heroTitle) heroTitle.style.transform=`translateY(${y*.18}px)`;
+  if(heroSub) heroSub.style.transform=`translateY(${y*.1}px)`;
+},{passive:true});
+
+// ── MAGNETIC BUTTONS ──────────────────────────
+document.querySelectorAll('.btn').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=e.clientX-r.left-r.width/2;
+    const y=e.clientY-r.top-r.height/2;
+    btn.style.transform=`translate(${x*.15}px,${y*.15}px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{
+    btn.style.transform='';
+  });
+});
+
+// ── TILT ON RESULT CARDS ──────────────────────
+document.querySelectorAll('.rc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`translateY(-4px) rotateX(${-y*6}deg) rotateY(${x*6}deg)`;
+    card.style.transition='none';
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+    card.style.transition='';
+  });
+});
+
+// ── STAGE HOVER DATA-FLOW ─────────────────────
+document.querySelectorAll('.stage').forEach(stage=>{
+  stage.addEventListener('mouseenter',()=>{
+    document.querySelectorAll('.flow-particle').forEach(p=>{
+      p.style.animationDuration='1s';
+    });
+  });
+  stage.addEventListener('mouseleave',()=>{
+    document.querySelectorAll('.flow-particle').forEach(p=>{
+      p.style.animationDuration='2.5s';
+    });
+  });
+});
+</script>
+</body>
+</html>
+
+
